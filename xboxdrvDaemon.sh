@@ -1,0 +1,27 @@
+#!/bin/bash
+# A simple daemon to check if device has plugged or not and start or stop the xboxdrv service
+status=0
+while true; do
+if [[ $(lsusb | grep 2f24:0050) == *"2f24:0050"* ]] || [[ $(lsusb | grep 2f24:0053) == *"2f24:0053"* ]] && [[ $status -eq "0" ]]; then
+  echo "Device found!"
+  echo "Starting service"
+  sudo systemctl start xboxdrv
+  notify-send --hint=int:transient:1 "Xbox Gamepad" "Device plugged"
+  status=1
+else
+  echo "Sleeping for 5 seconds."
+  if [[ $status -eq "1" ]]; then
+    if [[ $(lsusb | grep 2f24:0050) == *"2f24:0050"* ]] || [[ $(lsusb | grep 2f24:0053) == *"2f24:0053"* ]] && [[ $status -eq "1" ]]; then
+      :
+      else
+        echo "Device not found!"
+        echo "Stopping service"
+        sudo systemctl stop xboxdrv
+        status=0
+        notify-send --hint=int:transient:1 "Xbox Gamepad" "Device unplugged"
+    fi   
+  fi
+  sleep 10s
+
+fi
+done
