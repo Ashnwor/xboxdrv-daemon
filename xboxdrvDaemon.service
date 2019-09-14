@@ -1,0 +1,4 @@
+[Unit]
+Description=yet another xboxdrv daemon
+[Service]
+ExecStart=/bin/bash /usr/local/bin/xboxdrvDaemon
